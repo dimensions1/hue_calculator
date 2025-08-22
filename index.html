@@ -96,11 +96,26 @@
       border: 1px solid #ddd;
       border-radius: 4px;
     }
+
+    .test-type {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .test-type label {
+      margin: 0 15px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Milk Contaminant Analyzer</h1>
+
+    <div class="test-type">
+      <label><input type="radio" name="testType" value="tube" checked> Test Tube Testing</label>
+      <label><input type="radio" name="testType" value="substrate"> Substrate Testing</label>
+    </div>
 
     <div class="upload-section">
       <div class="image-container">
@@ -111,8 +126,8 @@
         </div>
       </div>
 
-      <div class="image-container">
-        <h3>Reference Image <span style="font-size:12px; color:#777">(Optional)</span></h3>
+      <div class="image-container" id="referenceSection" style="display:none;">
+        <h3>Reference Image</h3>
         <input type="file" id="referenceInput" accept="image/*">
         <div class="cropper-container">
           <img id="referenceImage" class="cropper">
@@ -231,7 +246,7 @@
       const sampleRGB = getAverageRGB(sampleImage);
 
       let referenceRGB;
-      if (referenceImage.cropper) {
+      if (referenceImage.cropper && document.querySelector('input[name="testType"]:checked').value === 'substrate') {
         referenceRGB = getAverageRGB(referenceImage);
       } else {
         referenceRGB = { r: 0, g: 0, b: 0 };
@@ -289,6 +304,17 @@
       initializeCropper(document.getElementById('sampleImage'), document.getElementById('sampleInput'));
       initializeCropper(document.getElementById('referenceImage'), document.getElementById('referenceInput'));
       document.getElementById('concentration').addEventListener('input', checkReadyToProcess);
+
+      document.querySelectorAll('input[name="testType"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+          const referenceSection = document.getElementById('referenceSection');
+          if (this.value === 'substrate') {
+            referenceSection.style.display = 'block';
+          } else {
+            referenceSection.style.display = 'none';
+          }
+        });
+      });
     });
   </script>
 </body>
